@@ -1,0 +1,41 @@
+doctype 5
+html
+    head
+        title= "Color Selector"
+        script(src='/javascripts/colorpicker.min.js')
+        script(src='/javascripts/jquery-1.8.2.min.js')
+        script(src='/socket.io/socket.io.js')
+        link(rel='stylesheet', href='/stylesheets/themes.css', type='text/css')
+        style(type="text/css")
+            body {
+                background-color: #62d1d2;
+                padding: 50px;
+            }
+    body
+        .cp-default
+            .picker-wrapper
+                #picker.picker
+                #picker-indicator.picker-indicator
+            .slide-wrapper
+                #slide.slide
+                #slide-indicator.slide-indicator
+    
+        script(type='text/javascript')
+            $(function() {
+            var socket = io.connect("/ambience");
+            socket.on('news', function(data) {
+              console.log(data);
+            });
+            c = ColorPicker(document.getElementById('slide'), document.getElementById('picker'));
+            c.callback = function(hex, hsv, rgb, mousePicker, mouseSlide) {
+                ColorPicker.positionIndicators(
+                    document.getElementById('slide-indicator'), 
+                    document.getElementById('picker-indicator'),
+                    mouseSlide, mousePicker);
+                document.body.style.backgroundColor = hex;
+                
+                socket.emit('color', hex);
+            };
+            
+            c.setHex("#{color}");
+            });
