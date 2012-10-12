@@ -32,28 +32,17 @@ app.configure('development', function(){
 app.get(/ambience\/cinema\/?(.*)/, ambience.cinema);
 app.get('/ambience/color', ambience.color);
 app.get('/ambience/color/*', ambience.color);
+//app.get('/audio/*', audio.play);
 app.get('/', routes.index);
 
 var server = http.createServer(app);
 var io = require('socket.io');
 var socket = io.listen(server);
 
-light.init(socket.of('ambience'));
+console.log("foo")
+light.init(socket.of('/ambience'));
 
 server.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
 
-/*
-var timers = require('timers')
-  , light = require('./lib/light')
-  , onecolor = require('onecolor')
-
-var hue = 0;
-
-timers.setInterval(function() {
-  hue = Math.random() * 360;
-  var color = onecolor('hsv(' + hue + ',255,255)');
-  light.setMainColor(color.hex());
-}, 7000)
-*/

@@ -22,10 +22,7 @@ html
     
         script(type='text/javascript')
             $(function() {
-            var socket = io.connect("/ambience");
-            socket.on('news', function(data) {
-              console.log(data);
-            });
+            var lock = false;
             c = ColorPicker(document.getElementById('slide'), document.getElementById('picker'));
             c.callback = function(hex, hsv, rgb, mousePicker, mouseSlide) {
                 ColorPicker.positionIndicators(
@@ -34,8 +31,17 @@ html
                     mouseSlide, mousePicker);
                 document.body.style.backgroundColor = hex;
                 
-                socket.emit('color', hex);
+                if (!lock) {
+                    socket.emit('color', hex);
+                }
             };
+
+            var socket = io.connect("/ambience");
+            socket.on('color', function(data) {
+              lock = true;
+              c.setHex(data);
+              lock = false;
+            });
             
             c.setHex("#{color}");
             });

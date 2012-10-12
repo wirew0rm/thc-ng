@@ -1,7 +1,7 @@
 var light = require('../lib/light');
 
 exports.color = function(req, res) {
-  if (req.params) {
+  if (req.params != false) {
     light.setMainColor(req.params[0]);
   }
 
