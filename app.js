@@ -43,5 +43,16 @@ server.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
 
+/*
+var timers = require('timers')
+  , light = require('./lib/light')
+  , onecolor = require('onecolor')
 
+var hue = 0;
 
+timers.setInterval(function() {
+  hue = Math.random() * 360;
+  var color = onecolor('hsv(' + hue + ',255,255)');
+  light.setMainColor(color.hex());
+}, 7000)
+*/
