@@ -10,9 +10,17 @@ exports.color = function(req, res) {
   }
 }
 
-exports.setColor = function(req, res) {
-  light.setMainColor(255, 255, 255);
-  console.log(req);
+exports.cinema = function(req, res) {
+  if (req.params[0] == 'on') {
+    light.setCinemaMode(true);
+  } else if (req.params[0] == 'off') {
+     light.setCinemaMode(false);
+  } else {
+    res.end("Usage: /ambience/cinema/[on|off]");
+    return;
+  }
+
+  res.end()
 }
 
 var io = require('socket.io')

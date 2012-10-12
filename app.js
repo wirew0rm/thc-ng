@@ -29,6 +29,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+app.get(/ambience\/cinema\/?(.*)/, ambience.cinema);
 app.get('/ambience/color', ambience.color);
 app.get('/ambience/color/*', ambience.color);
 app.get('/', routes.index);
