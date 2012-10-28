@@ -1,8 +1,10 @@
 var light = require('../lib/light');
+var onecolor = require('onecolor')
 
 exports.color = function(req, res) {
-  if (req.params != false) {
-    light.setMainColor(req.params[0]);
+  if (req.params != false && onecolor(req.params[0])) {
+    console.log(req.params[0], onecolor(req.params[0]))
+    light.setMainColor(onecolor(req.params[0]));
   }
 
   if (req.method == 'GET') {
