@@ -10,6 +10,7 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , light = require('./lib/light')
+  , audiosample = require('./lib/audiosample')
 
 var app = express();
 
