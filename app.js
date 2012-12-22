@@ -10,12 +10,14 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , light = require('./lib/light')
+  , audio = require('./routes/audio')
   , audiosample = require('./lib/audiosample')
+  , MPD = require('./lib/node-mpd/lib/')
 
 var app = express();
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', process.env.PORT || 8001);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -31,14 +33,15 @@ app.configure('development', function(){
 });
 
 app.get(/ambience\/cinema\/?(.*)/, ambience.cinema);
-app.get('/ambience/color', ambience.color);
 app.get('/ambience/color/*', ambience.color);
-//app.get('/audio/*', audio.play);
+app.get('/ambience/color', ambience.color);
+app.get('/play*', audio.play);
+app.get('/ring', audio.ring);
 app.get('/', ambience.color);
 
 var PadKontrol = require('./lib/padkontrol')
 var padkontrol = new PadKontrol(2, 2)
-//padkontrol.open(2, 2);
+
 padkontrol.on('pad_timer', function(pad, pressedTime, vel) {
   if (pad < 8) {
     var color = light.getMainColor();
@@ -59,6 +62,29 @@ padkontrol.on('pad_timer', function(pad, pressedTime, vel) {
 
 padkontrol.on('pad', function(pad, pressed, vel) {
   if (pressed && pad == 8) audiosample.play('miau/miau.wav', vel / 127.0);
+  if (pressed && pad == 9) audiosample.play('miau/mooh.wav', vel / 127.0);
+  if (pressed && pad == 12) audiosample.play('miau/poettering.wav', vel   / 127.0);
+})
+
+var mpd = new MPD();
+
+mpd.on('connect', function() {
+  mpd.on('volume', function(volume) {
+//    console.log(mpd)
+    mpd.volume = parseInt(volume, 10);
+    console.log('Received volume ', volume);
+    padkontrol.setLEDSegments(volume);
+    // TOOD: 
+  });
+});
+
+
+padkontrol.on('rotary_encoder', function(direction) {
+  var volume = mpd.volume + direction;
+  console.log("setting volume to " + volume)
+  if (volume >= 0 && volume <= 100) {
+    mpd.send('setvol ' + volume, function() {} );
+  }
 })
 
 var server = http.createServer(app);
