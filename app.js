@@ -70,11 +70,8 @@ var mpd = new MPD();
 
 mpd.on('connect', function() {
   mpd.on('volume', function(volume) {
-//    console.log(mpd)
     mpd.volume = parseInt(volume, 10);
-    console.log('Received volume ', volume);
     padkontrol.setLEDSegments(volume);
-    // TOOD: 
   });
 });
 
