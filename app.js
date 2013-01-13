@@ -69,19 +69,30 @@ padkontrol.on('pad', function(pad, pressed, vel) {
 var mpd = new MPD();
 
 mpd.on('connect', function() {
+  mpd.volumeDiff = 0; // See rotary_encoder callback
   mpd.on('volume', function(volume) {
-    mpd.volume = parseInt(volume, 10);
     padkontrol.setLEDSegments(volume);
+
+    if (mpd.volumeDiff != 0) {
+      // Hack: Implement sending of local volume changes here, because node-mpd is buggy and mixes up status requests
+      var newVolume = parseInt(volume) + mpd.volumeDiff;
+      newVolume = Math.max(0, Math.min(100, newVolume)); // Clamp to 0-100
+      mpd.send('setvol ' + newVolume, function() {});
+      mpd.volumeDiff = 0;
+    }
   });
 });
 
 
 padkontrol.on('rotary_encoder', function(direction) {
-  var volume = mpd.volume + direction;
-  console.log("setting volume to " + volume)
-  if (volume >= 0 && volume <= 100) {
-    mpd.send('setvol ' + volume, function() {} );
-  }
+  // Algorithm to avoid race condition / volume step skips:
+  // 1) Send a status request if there is none pending
+  // 2) Accumulate the volume changes
+  // 3) Status callback: Compute and send the absolute volume, and reset local change counter
+  
+  mpd.volumeDiff += direction;
+
+  // for 3) see mpd.on('volume')()
 })
 
 var server = http.createServer(app);
@@ -93,4 +104,3 @@ light.init(socket.of('/ambience'));
 server.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
-
