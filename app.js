@@ -7,6 +7,7 @@ var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , ambience = require('./routes/ambience')
+  , hexaswitch = require('./routes/hexaswitch')
   , http = require('http')
   , path = require('path')
   , light = require('./lib/light')
@@ -64,6 +65,8 @@ padkontrol.on('pad', function(pad, pressed, vel) {
   if (pressed && pad == 8) audiosample.play('miau/miau.wav', vel / 127.0);
   if (pressed && pad == 9) audiosample.play('miau/mooh.wav', vel / 127.0);
   if (pressed && pad == 12) audiosample.play('miau/poettering.wav', vel   / 127.0);
+
+  if (pad == 13) hexaswitch.switch("aaaa::50:c4ff:fe04:828e", pressed);
 })
 
 var mpd = new MPD();
