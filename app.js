@@ -36,6 +36,8 @@ app.configure('development', function(){
 app.get(/ambience\/cinema\/?(.*)/, ambience.cinema);
 app.get('/ambience/color/*', ambience.color);
 app.get('/ambience/color', ambience.color);
+app.get('/ambience/script', ambience.showScripts);
+app.get('/ambience/script/*', ambience.setScript);
 app.get('/play*', audio.play);
 app.get('/ring', audio.ring);
 app.get('/', ambience.color);
@@ -67,6 +69,19 @@ padkontrol.on('pad', function(pad, pressed, vel) {
   if (pressed && pad == 12) audiosample.play('miau/poettering.wav', vel   / 127.0);
 
   if (pad == 13) hexaswitch.switch("aaaa::50:c4ff:fe04:828e", pressed);
+})
+
+padkontrol.on('button', function(button, pressed) {
+  if (pressed && button == 11) mpd.send('previous');
+  if (pressed && button == 12) mpd.send('next');
+  
+  if (pressed && button == 15) {
+    if (mpd.status.state == 'stop') {
+      mpd.send('play');
+    } else {
+      mpd.send('pause');
+    }
+  }
 })
 
 var mpd = new MPD();
