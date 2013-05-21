@@ -1,5 +1,6 @@
 var light = require('../lib/light');
 var onecolor = require('onecolor')
+var fs = require('fs');
 
 exports.color = function(req, res) {
   if (req.params != false && onecolor(req.params[0])) {
@@ -23,6 +24,22 @@ exports.cinema = function(req, res) {
   }
 
   res.end()
+}
+
+exports.showScripts = function(req, res) {
+  var filelist = fs.readdirSync('./lib/lightscripts/').map(function(file) {
+     return '<a href="' + file + '">' + file + '</a><br>';
+  });
+  filelist.unshift("<html><p>Usage: /ambience/script/$filename<br>$filename is one of the following:</p>\n");
+  res.send(filelist.join("\n"));
+  res.end();
+}
+
+exports.setScript = function(req, res) {
+  var script = req.params[0];
+
+  light.setLightScript(script);
+  res.end();
 }
 
 var io = require('socket.io')
