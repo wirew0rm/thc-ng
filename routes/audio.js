@@ -22,7 +22,7 @@ exports.play = function(req, res) {
   }
   var filelist = fs.readdirSync('./audio/miau/').map(function(file) {
      var plainfile = file.replace(".wav", "");
-     return '<a href="' + plainfile + '">' + plainfile + '</a><br>';
+     return '<a href="/play/' + plainfile + '">' + plainfile + '</a><br>';
   });
   filelist.unshift("<html><p>Usage: /play/$filename<br>$filename is one of the following:</p>\n");
   res.send(filelist.join("\n"));
